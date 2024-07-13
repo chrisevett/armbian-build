@@ -300,7 +300,7 @@ function kernel_package_callback_linux_image() {
 					touch /boot/.next
 					if is_boot_dev_vfat; then
 						echo "Armbian: FAT32 /boot: move last-installed kernel to '$image_name'..."
-						mv -v /${installed_image_path} /boot/${image_name}
+						ln -sfv $(basename "${installed_image_path}") /boot/$image_name
 					else
 						echo "Armbian: update last-installed kernel symlink to '$image_name'..."
 						ln -sfv $(basename "${installed_image_path}") /boot/$image_name
@@ -312,10 +312,14 @@ function kernel_package_callback_linux_image() {
 					# call debian helper, for compatibility. this symlinks things according to /etc/kernel-img.conf
 					# "install" or "upgrade" are decided in a very contrived way by Debian (".fresh-install" file)
 					# do NOT do this if /boot is a vfat, though.
-					if ! is_boot_dev_vfat; then
-						echo "Armbian: Debian compat: linux-update-symlinks install ${kernel_version_family} ${installed_image_path}"
-						linux-update-symlinks install "${kernel_version_family}" "${installed_image_path}" || true
-					fi
+					#
+#					if ! is_boot_dev_vfat; then
+#						echo "Armbian: Debian compat: linux-update-symlinks install ${kernel_version_family} ${installed_image_path}"
+#						linux-update-symlinks install "${kernel_version_family}" "${installed_image_path}" || true
+#					fi
+#
+					echo "Armbian: Debian compat: linux-update-symlinks install ${kernel_version_family} ${installed_image_path}"
+					linux-update-symlinks install "${kernel_version_family}" "${installed_image_path}" || true
 				HOOK_FOR_DEBIAN_COMPAT_SYMLINK
 			fi
 		)
